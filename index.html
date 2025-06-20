@@ -515,6 +515,35 @@
   </div>
 
   <script>
+
+// Add this function to your existing code
+async function performWebSearch(query) {
+  if (!googleApiKey) {
+    return "Web search is disabled. Please enter a valid Google API key.";
+  }
+
+  const searchEngineId = 'YOUR_SEARCH_ENGINE_ID'; // Replace with your ID
+  const url = `https://www.googleapis.com/customsearch/v1?key=${googleApiKey}&cx=${searchEngineId}&q=${encodeURIComponent(query)}`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    if (data.items && data.items.length > 0) {
+      let results = "Here's what I found:\n\n";
+      data.items.slice(0, 3).forEach((item, index) => {
+        results += `${index + 1}. ${item.title}\n${item.snippet}\n${item.link}\n\n`;
+      });
+      return results;
+    } else {
+      return "I couldn't find any relevant results for your query.";
+    }
+  } catch (error) {
+    console.error("Search error:", error);
+    return "Sorry, I encountered an error while searching.";
+  }
+}
+
     // API key management
     const API_KEY_STORAGE_KEY = 'google_api_key';
     let googleApiKey = localStorage.getItem(API_KEY_STORAGE_KEY) || '';
@@ -852,65 +881,45 @@
     }
 
     async function sendMessage() {
-      const input = document.getElementById("userInput");
-      const userInput = input.value.trim();
-      if (!userInput) return;
-      
-      // Add user message to chat
-      addMessage("user", userInput, false);
-      input.value = "";
-      
-      // Show typing indicator
-      showTypingIndicator();
-      
-      // Process user input
-      const botResponse = processUserInput(userInput);
-      
-      if (botResponse) {
-        // If we have a smart reply, use it
-        setTimeout(() => {
-          hideTypingIndicator();
-          addMessage("bot", botResponse);
-          speak(botResponse);
-        }, 1000 + Math.random() * 1000);
-      } else {
-        // Fetch from Google
-        setTimeout(async () => {
-          try {
-            const googleResults = await fetchGoogleResults(userInput);
-            hideTypingIndicator();
-            
-            if (googleResults === null) {
-              if (!googleApiKey) {
-                addMessage("bot", "🔍 Web search is disabled. Please enter your Google API key to enable this feature.");
-              } else {
-                addMessage("bot", "I encountered an error while searching. Please check your API key or try again later.");
-              }
-            } else if (googleResults.length > 0) {
-              const formattedResults = formatGoogleResults(googleResults);
-              addMessage("bot", formattedResults);
-              // Speak the first snippet
-              speak(googleResults[0].snippet.substring(0, 200) + "...");
-            } else {
-              addMessage("bot", "I couldn't find any relevant information on that topic. Could you try rephrasing your question?");
-            }
-          } catch (error) {
-            hideTypingIndicator();
-            addMessage("bot", "An error occurred while processing your request. Please try again later.");
-          }
-        }, 1500);
-      }
+  const input = document.getElementById("userInput");
+  const userInput = input.value.trim();
+  if (!userInput) return;
+  
+  // Add user message
+  addMessage("user", userInput, false);
+  input.value = "";
+  
+  showTypingIndicator();
+  
+  // First check if we have a predefined response
+  const quickResponse = processUserInput(userInput);
+  
+  if (quickResponse) {
+    setTimeout(() => {
+      hideTypingIndicator();
+      addMessage("bot", quickResponse);
+    }, 1000);
+  } else {
+    // If no quick response, perform web search
+    setTimeout(async () => {
+      hideTypingIndicator();
+      const searchResults = await performWebSearch(userInput);
+      addMessage("bot", searchResults);
+    }, 1500);
+  }
+}
+
+    // Load chat history from localStorage
+    function loadHistory() {
+      const history = JSON.parse(localStorage.getItem("chatHistory")) || [];
+      history.forEach(msg => addMessage("user", msg, false));
     }
 
-    // Initialize on load
-    window.onload = function() {
+    // Initialize chat
+    document.addEventListener("DOMContentLoaded", () => {
+      loadHistory();
       scrollToBottom();
-      
-      // Initialize with a welcome message after a short delay
-      setTimeout(() => {
-        addMessage("bot", "I can answer questions about famous people, scientific concepts, technology, and current events. Try asking 'Who is Satya Nadella?' or 'What is blockchain?'");
-      }, 3000);
-    };
+    });
   </script>
 </body>
 </html>
