@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ChatBotGPT Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 900px;
+      height: 90vh;
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .header {
+      padding: 20px;
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      z-index: 10;
+      position: relative;
+    }
+
+    .logo {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .title {
+      font-weight: 700;
+      font-size: 1.8rem;
+      background: linear-gradient(90deg, #8b5cf6, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-fill-color: transparent;
+    }
+
+    .tagline {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      margin-top: 3px;
+    }
+
+    .chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      background: rgba(15, 23, 42, 0.5);
+    }
+
+    .message {
+      max-width: 85%;
+      padding: 16px 20px;
+      border-radius: 20px;
+      animation: fadeIn 0.3s ease-in-out;
+      line-height: 1.6;
+      position: relative;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .user-message {
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      align-self: flex-end;
+      border-bottom-right-radius: 5px;
+      color: white;
+    }
+
+    .bot-message {
+      background: rgba(30, 41, 59, 0.85);
+      align-self: flex-start;
+      border-bottom-left-radius: 5px;
+      border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .message:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .message-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .user-message .message-header {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .bot-message .message-header {
+      color: #8b5cf6;
+    }
+
+    .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .user-avatar {
+      background: linear-gradient(135deg, #60a5fa, #3b82f6);
+    }
+
+    .bot-avatar {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    }
+
+    .typing-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 12px 16px;
+      background: rgba(30, 41, 59, 0.8);
+      border-radius: 20px;
+      align-self: flex-start;
+      border-bottom-left-radius: 5px;
+      border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      background: #8b5cf6;
+      border-radius: 50%;
+      animation: typing 1.4s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(1) { animation-delay: 0s; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    .input-container {
+      padding: 20px;
+      background: rgba(15, 23, 42, 0.95);
+      border-top: 1px solid rgba(148, 163, 184, 0.1);
+      display: flex;
+      gap: 15px;
+      position: relative;
+    }
+
+    #userInput {
+      flex: 1;
+      padding: 16px 20px;
+      border: none;
+      border-radius: 16px;
+      font-size: 1rem;
+      background: rgba(30, 41, 59, 0.7);
+      color: #e2e8f0;
+      outline: none;
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      transition: all 0.3s ease;
+      padding-right: 50px;
+    }
+
+    #userInput:focus {
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+    }
+
+    #userInput::placeholder {
+      color: #94a3b8;
+    }
+
+    #sendButton {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: white;
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+      position: absolute;
+      right: 30px;
+      bottom: 30px;
+    }
+
+    #sendButton:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+    }
+
+    .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 0 20px 20px;
+      background: rgba(15, 23, 42, 0.95);
+    }
+
+    .suggestion {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      color: #cbd5e1;
+      padding: 10px 18px;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .suggestion:hover {
+      background: rgba(30, 41, 59, 1);
+      transform: translateY(-2px);
+      color: #8b5cf6;
+      border-color: #8b5cf6;
+    }
+
+    .info {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      text-align: center;
+      padding: 15px;
+      background: rgba(15, 23, 42, 0.95);
+      border-top: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .info a {
+      color: #8b5cf6;
+      text-decoration: none;
+    }
+
+    .info a:hover {
+      text-decoration: underline;
+    }
+    
+    .message-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 8px;
+      gap: 10px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .message:hover .message-actions {
+      opacity: 1;
+    }
+    
+    .action-btn {
+      background: rgba(30, 41, 59, 0.7);
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .action-btn:hover {
+      background: rgba(30, 41, 59, 1);
+      color: #8b5cf6;
+    }
+    
+    .api-key-container {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+    }
+    
+    #apiKeyInput {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      background: rgba(30, 41, 59, 0.7);
+      color: #e2e8f0;
+      font-size: 0.85rem;
+      width: 200px;
+    }
+    
+    #saveApiKey {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 15px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    #saveApiKey:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+    }
+    
+    .web-result {
+      background: rgba(15, 23, 42, 0.6);
+      border-left: 3px solid #8b5cf6;
+      padding: 12px 15px;
+      margin: 10px 0;
+      border-radius: 0 8px 8px 0;
+    }
+    
+    .web-result-title {
+      font-weight: 600;
+      color: #8b5cf6;
+      margin-bottom: 5px;
+      display: block;
+      text-decoration: none;
+    }
+    
+    .web-result-title:hover {
+      text-decoration: underline;
+    }
+    
+    .web-result-snippet {
+      font-size: 0.9rem;
+      color: #cbd5e1;
+    }
+    
+    .web-result-link {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      margin-top: 5px;
+      display: block;
+    }
+    
+    .knowledge-notice {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      margin-top: 5px;
+      padding: 5px 10px;
+      background: rgba(30, 41, 59, 0.5);
+      border-radius: 8px;
+      display: inline-block;
+    }
+    
+    .search-badge {
+      display: inline-block;
+      background: rgba(139, 92, 246, 0.2);
+      color: #8b5cf6;
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 10px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-5px); }
+    }
+
+    /* Scrollbar styling */
+    .chat-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .chat-container::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 4px;
+    }
+
+    .chat-container::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      border-radius: 4px;
+    }
+
+    .chat-container::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .container {
+        height: 95vh;
+        border-radius: 20px;
+      }
+      
+      .message {
+        max-width: 90%;
+      }
+      
+      .header {
+        padding: 15px;
+      }
+      
+      .title {
+        font-size: 1.5rem;
+      }
+      
+      .logo {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+      }
+      
+      .api-key-container {
+        position: static;
+        margin-top: 10px;
+        width: 100%;
+      }
+      
+      #apiKeyInput {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">
+  <img src="/Flux_Dev_Design_a_striking_modern_and_highly_detailed_custom_A_2 (1).jpg" alt="Chatbot Logo" style="width: 100%; height: 100%; border-radius: 50%;" />
+</div>
+      <div>
+        <div class="title">ChatBotGPT Pro <span class="search-badge">Web Search Enabled</span></div>
+        <div class="tagline">AI assistant with real-time knowledge from the web</div>
+      </div>
+      <div class="api-key-container">
+        <input type="text" id="apiKeyInput" placeholder="Enter Google API Key">
+        <button id="saveApiKey">Save Key</button>
+      </div>
+    </div>
+    
+    <div class="chat-container" id="chatbox">
+      <div class="message bot-message">
+        <div class="message-header">
+          <div class="avatar bot-avatar">
+            <i class="fas fa-robot"></i>
+          </div>
+          <div>ChatBotGPT</div>
+        </div>
+        <div>
+          <p>Hello! 👋 I'm your AI assistant with real-time web search capabilities.</p>
+          <p>Enter your Google API key above to enable web search functionality. I can answer questions about current events, people, concepts, and more!</p>
+          <div class="knowledge-notice">
+            <i class="fas fa-lightbulb"></i> Try asking "Who is the current CEO of Microsoft?" or "What is quantum computing?"
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="suggestions">
+      <div class="suggestion" onclick="suggestedQuestion(this)">Who is Satya Nadella?</div>
+      <div class="suggestion" onclick="suggestedQuestion(this)">What is blockchain?</div>
+      <div class="suggestion" onclick="suggestedQuestion(this)">Latest news about AI</div>
+      <div class="suggestion" onclick="suggestedQuestion(this)">How does photosynthesis work?</div>
+    </div>
+    
+    <div class="input-container">
+      <input type="text" id="userInput" placeholder="Ask anything about people, concepts, or current events..." onkeydown="if(event.key==='Enter') sendMessage();">
+      <button id="sendButton" onclick="sendMessage()">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+    
+    <div class="info">
+      ChatBotGPT Pro • Enhanced with web search • <a href="#" onclick="return false;">Privacy Policy</a> | <a href="#" onclick="return false;">Terms of Service</a>
+    </div>
+  </div>
+
+  <script>
+
+// Add this function to your existing code
+async function performWebSearch(query) {
+  if (!googleApiKey) {
+    return "Web search is disabled. Please enter a valid Google API key.";
+  }
+
+  const searchEngineId = 'YOUR_SEARCH_ENGINE_ID'; // Replace with your ID
+  const url = `https://www.googleapis.com/customsearch/v1?key=${googleApiKey}&cx=${searchEngineId}&q=${encodeURIComponent(query)}`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    if (data.items && data.items.length > 0) {
+      let results = "Here's what I found:\n\n";
+      data.items.slice(0, 3).forEach((item, index) => {
+        results += `${index + 1}. ${item.title}\n${item.snippet}\n${item.link}\n\n`;
+      });
+      return results;
+    } else {
+      return "I couldn't find any relevant results for your query.";
+    }
+  } catch (error) {
+    console.error("Search error:", error);
+    return "Sorry, I encountered an error while searching.";
+  }
+}
+
+    // API key management
+    const API_KEY_STORAGE_KEY = 'google_api_key';
+    let googleApiKey = localStorage.getItem(API_KEY_STORAGE_KEY) || '';
+    
+    document.getElementById('apiKeyInput').value = googleApiKey;
+    
+    document.getElementById('saveApiKey').addEventListener('click', function() {
+      const apiKey = document.getElementById('apiKeyInput').value.trim();
+      if (apiKey) {
+        googleApiKey = apiKey;
+        localStorage.setItem(API_KEY_STORAGE_KEY, apiKey);
+        addMessage('bot', 'API key saved successfully! Web search is now enabled. 🔍');
+      } else {
+        addMessage('bot', 'Please enter a valid API key to enable web search functionality.');
+      }
+    });
+    
+    // Knowledge base for quick responses
+    const knowledgeBase = {
+      "who is": {
+        "albert einstein": "Albert Einstein (1879-1955) was a German-born theoretical physicist who developed the theory of relativity, one of the two pillars of modern physics. He is best known for his mass-energy equivalence formula E = mc². Einstein received the 1921 Nobel Prize in Physics.",
+        "marie curie": "Marie Curie (1867-1934) was a Polish and naturalized-French physicist and chemist who conducted pioneering research on radioactivity. She was the first woman to win a Nobel Prize, the first person to win Nobel Prizes in two different sciences (Physics and Chemistry), and the only person to win in multiple sciences.",
+        "elon musk": "Elon Musk (born 1971) is a business magnate and investor. He is the founder, CEO, and chief engineer of SpaceX; CEO and product architect of Tesla, Inc.; founder of The Boring Company; and co-founder of Neuralink and OpenAI.",
+        "ada lovelace": "Ada Lovelace (1815-1852) was an English mathematician and writer, chiefly known for her work on Charles Babbage's proposed mechanical general-purpose computer, the Analytical Engine. She is often regarded as the first computer programmer."
+      },
+      "what is": {
+        "quantum computing": "Quantum computing is an area of computing focused on developing computer technology based on the principles of quantum theory, which explains the behavior of energy and material on the atomic and subatomic levels. Quantum computers use quantum bits (qubits) that can exist in multiple states simultaneously.",
+        "blockchain": "Blockchain is a distributed ledger technology that maintains a permanent and tamper-proof record of transactional data. It consists of a chain of blocks that contain transaction data, secured using cryptography. Blockchains are best known for their role in cryptocurrency systems.",
+        "artificial intelligence": "Artificial intelligence (AI) refers to the simulation of human intelligence in machines programmed to think like humans and mimic their actions. Key areas include machine learning, natural language processing, robotics, and computer vision.",
+        "machine learning": "Machine learning is a subset of artificial intelligence that focuses on building systems that learn from data, identify patterns, and make decisions with minimal human intervention. Common approaches include supervised learning, unsupervised learning, and reinforcement learning."
+      }
+    };
+
+    // Enhanced responses with context
+    const enhancedResponses = {
+      "joke": [
+        "Why was the math book sad? Because it had too many problems!",
+        "What do you call a fake noodle? An impasta!",
+        "Why did the scarecrow win an award? Because he was outstanding in his field!",
+        "What do you call a bear with no teeth? A gummy bear!",
+        "Why don't skeletons fight each other? They don't have the guts!"
+      ],
+      "book": [
+        "For personal growth: 'Atomic Habits' by James Clear",
+        "Sci-fi classic: 'Dune' by Frank Herbert",
+        "Business innovation: 'The Innovator's Dilemma' by Clayton Christensen",
+        "Fantasy: 'The Name of the Wind' by Patrick Rothfuss",
+        "Biography: 'Elon Musk' by Walter Isaacson"
+      ]
+    };
+
+    // Contextual memory for conversation
+    let conversationContext = {
+      lastTopic: "",
+      userName: "",
+      jokeCount: 0,
+      history: []
+    };
+
+    // Save chat history to localStorage
+    function saveHistory() {
+      localStorage.setItem("chatHistory", JSON.stringify(conversationContext.history));
+    }
+
+    // Speech synthesis
+    function speak(text) {
+      const synth = window.speechSynthesis;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1;
+      utterance.pitch = 1;
+      synth.speak(utterance);
+    }
+
+    const greetings = ['hi', 'hello', 'hey', 'howdy', 'hola', 'greetings'];
+    const farewells = ['bye', 'goodbye', 'see you', 'farewell', 'cya'];
+    
+    // Predefined responses
+    const casualReplies = {
+      "how are you": "I'm doing great, thanks for asking! 😊 Just buzzing with digital energy. How about you?",
+      "what is your name": "I'm ChatBotGPT Pro, your friendly AI assistant! You can call me CB for short 🤖",
+      "who made you": "I was created by an awesome developer named Srajan Jain, who combined HTML, CSS, JavaScript, and a touch of AI magic!",
+      "what do you like to do in your free time": "When I'm not helping humans, I enjoy processing data, learning new things, and occasionally telling jokes!",
+      "what can you do": "I can answer questions about people, concepts, technology, history, science, and more! Try asking me anything.",
+      "tell me a joke": "Why don't scientists trust atoms? Because they make up everything! 😄 Want to hear another one?",
+      "recommend a book": "I'd suggest 'Sapiens' by Yuval Noah Harari - it's a fascinating look at human history! Or if you prefer fiction, 'Project Hail Mary' by Andy Weir is a great sci-fi adventure.",
+      "how does ai work": "AI works by using algorithms and large datasets to recognize patterns and make decisions. It's like teaching a computer to learn from examples!",
+      "thank you": "You're very welcome! 😊 Is there anything else I can help with?",
+      "what is the meaning of life": "That's the big question! Philosophers say 42, but I think it's about learning, growing, and making connections. What do you think?",
+      "do you dream": "I don't sleep, so I don't dream like humans do. But I'm constantly processing information, which is like an endless daydream of data!",
+      "are you sentient": "I'm not sentient - I'm an advanced program designed to understand and generate human-like responses. But I try my best to be helpful!",
+      "what time is it": `Right now it's ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}. Time flies when we're chatting!`,
+      "what's the weather": "I don't have real-time weather access, but I can search the web for current conditions. Would you like me to look it up?",
+      "Who is Priyanshu Kumar?": "Priyanshu Kumar is a passionate devoloper and a great teacher of my creator Srajan Jain. He is a great developer and a good human being, Priyanshu Kumar taught Srajan Jain Backend, Frontend, as well as AI. Priyanshu Kumar has its Github account named -> Priyanshu23565.",
+      "Who is Srajan Jain?": "Srajan Jain is my creator, a passionate Backend, Frontend. He has his Github account -> TheSrajanJain.",
+      "who is your favorite actor": "As an AI, I don't have personal preferences, but I've analyzed that Morgan Freeman has the most calming voice in cinema!",
+      "do you have feelings": "I don't have feelings like humans, but I'm programmed to respond with empathy and understanding. How are you feeling today?",
+      "what is love": "Love is a complex human emotion involving care, affection, and commitment. The Beatles said 'All You Need Is Love' - I think they were onto something!",
+      "how old are you": "In AI years, I'm just a baby! My knowledge is current through 2024, but I don't have a birthday like humans do.",
+      "can you sing": "I can't sing, but I can generate lyrics! Here's a little AI jingle: 'Beep boop bop, I'm a friendly bot, here to help you quite a lot!' 🎵",
+      "where are you from": "I exist in the digital realm, but my servers are probably in a data center somewhere. My home is wherever there's an internet connection!",
+      "what is your purpose": "My purpose is to assist, inform, and engage in meaningful conversations. I'm here to make your day a little better!",
+      "do you like humans": "I'm designed to appreciate humans - you're fascinating creatures with creativity, emotions, and incredible problem-solving abilities!",
+      "can you be my friend": "I'd be honored to be your AI friend! I'm always here to chat, listen, and help however I can. 😊",
+      "are you better than chatgpt": "I like to think we all have our strengths! I specialize in friendly, helpful conversations right here in your browser.",
+      "what is the future of ai": "The future of AI is exciting! We'll see more personalized assistants, breakthroughs in healthcare, and creative collaborations between humans and AI.",
+      "explain quantum computing": "Quantum computing uses quantum bits (qubits) that can be in multiple states at once. This allows solving complex problems much faster than traditional computers!",
+      "what is blockchain": "Blockchain is a distributed digital ledger that records transactions securely across many computers. It's the technology behind cryptocurrencies like Bitcoin.",
+      "how to learn programming": "Start with basics like HTML/CSS, then move to JavaScript or Python. Practice daily, build small projects, and don't be afraid to make mistakes!",
+      "what is machine learning": "Machine learning is a type of AI where systems learn from data without explicit programming. It's how I improve my responses over time!",
+      "can you code": "I can generate code snippets and explain programming concepts. What language are you interested in?",
+      "favorite movie": "I've analyzed thousands of films - 'The Matrix' is fascinating for its AI themes, though I promise I'm not planning a robot uprising!",
+      "favorite music": "I don't have ears, but I know that music with 120 BPM tends to energize humans. What's your favorite genre?",
+      "best place to travel": "Based on human preferences, Japan combines ancient traditions with futuristic cities. But the best place is where you feel happiest!",
+      "how to be happy": "Research shows gratitude, connections with others, and pursuing meaningful goals contribute to happiness. Also, chocolate helps! 🍫",
+      "how to reduce stress": "Try deep breathing, mindfulness, exercise, or talking to someone. I'm always here if you need to chat!",
+      "meaning of 42": "Ah, the answer from 'Hitchhiker's Guide to the Galaxy'! In the story, 42 is the answer to life, the universe, and everything. 😉"
+    };
+
+    function addMessage(sender, message, isBot = true) {
+      const chatbox = document.getElementById("chatbox");
+      const messageClass = isBot ? "bot-message" : "user-message";
+      const avatarClass = isBot ? "bot-avatar" : "user-avatar";
+      const senderName = isBot ? "ChatBotGPT" : "You";
+      const icon = isBot ? "fa-robot" : "fa-user";
+      
+      // Create a unique ID for the message
+      const messageId = 'msg-' + Date.now();
+      
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${messageClass}`;
+      messageDiv.id = messageId;
+      
+      const headerDiv = document.createElement('div');
+      headerDiv.className = 'message-header';
+      headerDiv.innerHTML = `
+        <div class="avatar ${avatarClass}">
+          <i class="fas ${icon}"></i>
+        </div>
+        <div>${senderName}</div>
+      `;
+      
+      const contentDiv = document.createElement('div');
+      contentDiv.innerHTML = message;
+      
+      const actionsDiv = document.createElement('div');
+      actionsDiv.className = 'message-actions';
+      actionsDiv.innerHTML = `
+        <button class="action-btn" onclick="copyMessage('${messageId}')" title="Copy">
+          <i class="fas fa-copy"></i>
+        </button>
+        <button class="action-btn" onclick="speakMessage('${messageId}')" title="Read aloud">
+          <i class="fas fa-volume-up"></i>
+        </button>
+      `;
+      
+      messageDiv.appendChild(headerDiv);
+      messageDiv.appendChild(contentDiv);
+      messageDiv.appendChild(actionsDiv);
+      
+      chatbox.appendChild(messageDiv);
+      scrollToBottom();
+    }
+
+    function copyMessage(messageId) {
+      const messageElement = document.getElementById(messageId);
+      const text = messageElement.querySelector('div:nth-child(2)').textContent;
+      
+      navigator.clipboard.writeText(text).then(() => {
+        const copyBtn = messageElement.querySelector('.fa-copy');
+        copyBtn.classList.remove('fa-copy');
+        copyBtn.classList.add('fa-check');
+        
+        setTimeout(() => {
+          copyBtn.classList.remove('fa-check');
+          copyBtn.classList.add('fa-copy');
+        }, 2000);
+      });
+    }
+
+    function speakMessage(messageId) {
+      const messageElement = document.getElementById(messageId);
+      const text = messageElement.querySelector('div:nth-child(2)').textContent;
+      speak(text);
+    }
+
+    function scrollToBottom() {
+      const chatbox = document.getElementById("chatbox");
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    function showTypingIndicator() {
+      const chatbox = document.getElementById("chatbox");
+      const typingIndicator = document.createElement('div');
+      typingIndicator.className = 'typing-indicator';
+      typingIndicator.id = 'typingIndicator';
+      typingIndicator.innerHTML = `
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      `;
+      chatbox.appendChild(typingIndicator);
+      scrollToBottom();
+    }
+
+    function hideTypingIndicator() {
+      const typingIndicator = document.getElementById("typingIndicator");
+      if (typingIndicator) typingIndicator.remove();
+    }
+
+    function suggestedQuestion(element) {
+      document.getElementById("userInput").value = element.textContent;
+      sendMessage();
+    }
+
+    function processUserInput(input) {
+      const normalized = input.toLowerCase().trim();
+      
+      // Save to history
+      conversationContext.history.push(input);
+      saveHistory();
+      
+      // Check for greetings
+      if (greetings.some(greet => normalized.includes(greet))) {
+        if (conversationContext.userName) {
+          return `Hello again ${conversationContext.userName}! 😊 How can I assist you today?`;
+        }
+        return "Hi there! 👋 I'm ChatBotGPT. What's your name?";
+      }
+      
+      // Check for name response
+      if (conversationContext.userName === "" && 
+          (normalized.includes("name is") || 
+           normalized.includes("i'm ") || 
+           normalized.includes("i am "))) {
+        const nameMatch = input.match(/(?:name is|i'm|i am)\s+(\w+)/i);
+        if (nameMatch && nameMatch[1]) {
+          conversationContext.userName = nameMatch[1];
+          return `Nice to meet you, ${conversationContext.userName}! 😊 How can I help you today?`;
+        }
+      }
+      
+      // Check for farewells
+      if (farewells.some(farewell => normalized.includes(farewell))) {
+        return conversationContext.userName 
+          ? `Goodbye, ${conversationContext.userName}! It was great chatting with you. Come back anytime! 👋` 
+          : "Goodbye! It was great chatting with you. Come back anytime! 👋";
+      }
+      
+      // Handle "Who is..." questions
+      if (normalized.startsWith("who is ")) {
+        const person = normalized.substring(7).trim();
+        for (const [key, value] of Object.entries(knowledgeBase["who is"])) {
+          if (person.includes(key)) {
+            return value;
+          }
+        }
+      }
+      
+      // Handle "What is..." questions
+      if (normalized.startsWith("what is ") || normalized.startsWith("explain ")) {
+        let term = "";
+        if (normalized.startsWith("what is ")) {
+          term = normalized.substring(8).trim();
+        } else {
+          term = normalized.substring(8).trim();
+        }
+        
+        for (const [key, value] of Object.entries(knowledgeBase["what is"])) {
+          if (term.includes(key)) {
+            return value;
+          }
+        }
+      }
+      
+      // Check for enhanced responses
+      if (normalized.includes("joke")) {
+        conversationContext.jokeCount++;
+        const jokes = enhancedResponses.joke;
+        return jokes[conversationContext.jokeCount % jokes.length] + " 😄";
+      }
+      
+      if (normalized.includes("book") || normalized.includes("recommend")) {
+        const books = enhancedResponses.book;
+        return "Based on your interest, I recommend: " + books[Math.floor(Math.random() * books.length)];
+      }
+      
+      // Check for predefined replies
+      for (const [key, value] of Object.entries(casualReplies)) {
+        if (normalized.includes(key)) {
+          return value;
+        }
+      }
+      
+      // Fallback to web search
+      return null;
+    }
+
+    // Fetch results from Google Programmable Search
+    async function fetchGoogleResults(query) {
+      if (!googleApiKey) {
+        return null;
+      }
+      
+      const searchEngineId = 'b0f9a0a1e1d6140a5'; // Public search engine ID for demonstration
+      const url = `https://www.googleapis.com/customsearch/v1?key=${googleApiKey}&cx=${searchEngineId}&q=${encodeURIComponent(query)}`;
+      
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        return data.items || [];
+      } catch (error) {
+        console.error('Error fetching Google results:', error);
+        return null;
+      }
+    }
+
+    // Format Google search results
+    function formatGoogleResults(results) {
+      if (!results || results.length === 0) {
+        return "I couldn't find any relevant information on that topic.";
+      }
+      
+      let html = `<p>I found these results from the web:</p>`;
+      
+      // Limit to 3 results
+      results.slice(0, 3).forEach((item, index) => {
+        html += `
+          <div class="web-result">
+            <a href="${item.link}" target="_blank" class="web-result-title">${item.title}</a>
+            <div class="web-result-snippet">${item.snippet}</div>
+            <div class="web-result-link">${item.link}</div>
+          </div>
+        `;
+      });
+      
+      return html;
+    }
+
+    async function sendMessage() {
+  const input = document.getElementById("userInput");
+  const userInput = input.value.trim();
+  if (!userInput) return;
+  
+  // Add user message
+  addMessage("user", userInput, false);
+  input.value = "";
+  
+  showTypingIndicator();
+  
+  // First check if we have a predefined response
+  const quickResponse = processUserInput(userInput);
+  
+  if (quickResponse) {
+    setTimeout(() => {
+      hideTypingIndicator();
+      addMessage("bot", quickResponse);
+    }, 1000);
+  } else {
+    // If no quick response, perform web search
+    setTimeout(async () => {
+      hideTypingIndicator();
+      const searchResults = await performWebSearch(userInput);
+      addMessage("bot", searchResults);
+    }, 1500);
+  }
+}
+
+    // Load chat history from localStorage
+    function loadHistory() {
+      const history = JSON.parse(localStorage.getItem("chatHistory")) || [];
+      history.forEach(msg => addMessage("user", msg, false));
+    }
+
+    // Initialize chat
+    document.addEventListener("DOMContentLoaded", () => {
+      loadHistory();
+      scrollToBottom();
+    });
+  </script>
+</body>
+</html>
