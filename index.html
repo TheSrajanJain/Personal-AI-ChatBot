@@ -68,7 +68,6 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      text-fill-color: transparent;
     }
 
     .tagline {
@@ -465,8 +464,8 @@
   <div class="container">
     <div class="header">
       <div class="logo">
-  <img src="/Flux_Dev_Design_a_striking_modern_and_highly_detailed_custom_A_2 (1).jpg" alt="Chatbot Logo" style="width: 100%; height: 100%; border-radius: 50%;" />
-</div>
+        <i class="fas fa-robot"></i>
+      </div>
       <div>
         <div class="title">ChatBotGPT Pro <span class="search-badge">Web Search Enabled</span></div>
         <div class="tagline">AI assistant with real-time knowledge from the web</div>
@@ -515,35 +514,6 @@
   </div>
 
   <script>
-
-// Add this function to your existing code
-async function performWebSearch(query) {
-  if (!googleApiKey) {
-    return "Web search is disabled. Please enter a valid Google API key.";
-  }
-
-  const searchEngineId = 'YOUR_SEARCH_ENGINE_ID'; // Replace with your ID
-  const url = `https://www.googleapis.com/customsearch/v1?key=${googleApiKey}&cx=${searchEngineId}&q=${encodeURIComponent(query)}`;
-
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-    
-    if (data.items && data.items.length > 0) {
-      let results = "Here's what I found:\n\n";
-      data.items.slice(0, 3).forEach((item, index) => {
-        results += `${index + 1}. ${item.title}\n${item.snippet}\n${item.link}\n\n`;
-      });
-      return results;
-    } else {
-      return "I couldn't find any relevant results for your query.";
-    }
-  } catch (error) {
-    console.error("Search error:", error);
-    return "Sorry, I encountered an error while searching.";
-  }
-}
-
     // API key management
     const API_KEY_STORAGE_KEY = 'google_api_key';
     let googleApiKey = localStorage.getItem(API_KEY_STORAGE_KEY) || '';
@@ -567,13 +537,42 @@ async function performWebSearch(query) {
         "albert einstein": "Albert Einstein (1879-1955) was a German-born theoretical physicist who developed the theory of relativity, one of the two pillars of modern physics. He is best known for his mass-energy equivalence formula E = mc². Einstein received the 1921 Nobel Prize in Physics.",
         "marie curie": "Marie Curie (1867-1934) was a Polish and naturalized-French physicist and chemist who conducted pioneering research on radioactivity. She was the first woman to win a Nobel Prize, the first person to win Nobel Prizes in two different sciences (Physics and Chemistry), and the only person to win in multiple sciences.",
         "elon musk": "Elon Musk (born 1971) is a business magnate and investor. He is the founder, CEO, and chief engineer of SpaceX; CEO and product architect of Tesla, Inc.; founder of The Boring Company; and co-founder of Neuralink and OpenAI.",
-        "ada lovelace": "Ada Lovelace (1815-1852) was an English mathematician and writer, chiefly known for her work on Charles Babbage's proposed mechanical general-purpose computer, the Analytical Engine. She is often regarded as the first computer programmer."
+        "ada lovelace": "Ada Lovelace (1815-1852) was an English mathematician and writer, chiefly known for her work on Charles Babbage's proposed mechanical general-purpose computer, the Analytical Engine. She is often regarded as the first computer programmer.",
+        "isaac newton": "Sir Isaac Newton (1643-1727) was an English mathematician, physicist, astronomer, and author who is widely recognized as one of the most influential scientists of all time. He formulated the laws of motion and universal gravitation, laying the groundwork for classical mechanics.",
+        "charles darwin": "Charles Darwin (1809-1882) was an English naturalist, geologist, and biologist best known for his contributions to the science of evolution. His book 'On the Origin of Species' introduced the scientific theory that populations evolve over generations through natural selection.",
+        "steve jobs": "Steve Jobs (1955-2011) was an American business magnate, industrial designer, and entrepreneur who co-founded Apple Inc. He played a key role in the development of the personal computer, smartphone, and tablet industries, and is known for his visionary leadership and design aesthetics.",
+        "tim berners-lee": "Tim Berners-Lee (born 1955) is an English engineer and computer scientist best known as the inventor of the World Wide Web. He proposed the idea of a hypertext system in 1989 and implemented the first successful communication between a Hypertext Transfer Protocol (HTTP) client and server via the internet.",
+        "sundar pichai": "Sundar Pichai (born 1972) is an Indian-American business executive who is the CEO of Alphabet Inc. and its subsidiary Google LLC. He joined Google in 2004 and led the product management and innovation efforts for a suite of Google's client software products, including Google Chrome and Chrome OS.",
+        "satya nadella": "Satya Nadella (born 1967) is an Indian-American business executive who is the chairman and CEO of Microsoft. He joined Microsoft in 1992 and has played a key role in transforming the company into a leader in cloud computing and artificial intelligence.",
+        "jeff bezos": "Jeff Bezos (born 1964) is an American entrepreneur, media proprietor, investor, and commercial astronaut. He is the founder, executive chairman, and former president and CEO of Amazon. Under his leadership, Amazon became one of the world's most valuable companies.",
+        "mark zuckerberg": "Mark Zuckerberg (born 1984) is an American computer programmer and internet entrepreneur who co-founded Facebook, Inc. He is the chairman and CEO of Meta Platforms, the parent company of Facebook, Instagram, and WhatsApp. Zuckerberg is known for his role in popularizing social networking.",
+        "bill gates": "Bill Gates (born 1955) is an American business magnate, software developer, philanthropist, and author. He is best known as the co-founder of Microsoft Corporation, the world's largest personal-computer software company. Gates has been a leading figure in the tech industry for decades and is also known for his philanthropic work through the Bill & Melinda Gates Foundation.",
+        "oprah winfrey": "Oprah Winfrey (born 1954) is an American talk show host, television producer, actress, author, and media proprietor. She is best known for her talk show 'The Oprah Winfrey Show,' which ran for 25 years. Winfrey is also a philanthropist and has been influential in various social causes.",
+        "greta thunberg": "Greta Thunberg (born 2003) is a Swedish environmental activist who is internationally known for her efforts to combat climate change. She gained global recognition for her school strike for climate movement, which began in 2018, and has since become a prominent voice in the fight against climate change.",
+        "srajan jain": "Srajan Jain is a software developer and creator of me, combining HTML, CSS, JavaScript, and AI to build this interactive chatbot experience. He is passionate about technology and enhancing user interactions through AI.",
+        "priyanshu kumar": "Priyanshu Kumar is a software developer and co-creator of ChatBotGPT Pro, he is the teacher of my creator Srajan Jain.",
       },
       "what is": {
         "quantum computing": "Quantum computing is an area of computing focused on developing computer technology based on the principles of quantum theory, which explains the behavior of energy and material on the atomic and subatomic levels. Quantum computers use quantum bits (qubits) that can exist in multiple states simultaneously.",
         "blockchain": "Blockchain is a distributed ledger technology that maintains a permanent and tamper-proof record of transactional data. It consists of a chain of blocks that contain transaction data, secured using cryptography. Blockchains are best known for their role in cryptocurrency systems.",
         "artificial intelligence": "Artificial intelligence (AI) refers to the simulation of human intelligence in machines programmed to think like humans and mimic their actions. Key areas include machine learning, natural language processing, robotics, and computer vision.",
-        "machine learning": "Machine learning is a subset of artificial intelligence that focuses on building systems that learn from data, identify patterns, and make decisions with minimal human intervention. Common approaches include supervised learning, unsupervised learning, and reinforcement learning."
+        "machine learning": "Machine learning is a subset of artificial intelligence that focuses on building systems that learn from data, identify patterns, and make decisions with minimal human intervention. Common approaches include supervised learning, unsupervised learning, and reinforcement learning.",
+        "internet of things": "The Internet of Things (IoT) refers to the network of physical objects embedded with sensors, software, and other technologies to connect and exchange data with other devices and systems over the internet. IoT enables smart devices to collect and share data, enhancing automation and efficiency.",
+        "augmented reality": "Augmented reality (AR) is an interactive experience that combines the real world with computer-generated content, enhancing the user's perception of their environment. AR applications overlay digital information onto the physical world, often through devices like smartphones or smart glasses.",
+        "virtual reality": "Virtual reality (VR) is a simulated experience that can be similar to or completely different from the real world. VR typically involves the use of headsets and motion tracking to immerse users in a computer-generated environment, allowing them to interact with 3D spaces and objects.",
+        "cloud computing": "Cloud computing is the delivery of computing services over the internet, allowing users to access and store data and applications on remote servers instead of local devices. It offers scalability, flexibility, and cost-effectiveness for businesses and individuals.",
+        "big data": "Big data refers to large and complex datasets that traditional data processing software cannot handle efficiently. It encompasses the collection, storage, analysis, and visualization of vast amounts of structured and unstructured data to extract valuable insights.",
+        "cybersecurity": "Cybersecurity is the practice of protecting systems, networks, and programs from digital attacks. It involves implementing measures to prevent unauthorized access, data breaches, and other cyber threats, ensuring the confidentiality, integrity, and availability of information.",
+        "5g technology": "5G technology is the fifth generation of mobile network technology, designed to provide faster speeds, lower latency, and greater capacity than previous generations. It enables advanced applications such as IoT, autonomous vehicles, and enhanced mobile broadband.",
+        "edge computing": "Edge computing is a distributed computing paradigm that brings computation and data storage closer to the location where it is needed, reducing latency and bandwidth usage. It enables real-time processing of data generated by IoT devices and other sources at the edge of the network.",
+        "neural networks": "Neural networks are a subset of machine learning inspired by the structure and function of the human brain. They consist of interconnected nodes (neurons) that process data in layers, enabling the model to learn complex patterns and make predictions.",
+        "natural language processing": "Natural language processing (NLP) is a field of artificial intelligence that focuses on the interaction between computers and humans through natural language. It involves enabling machines to understand, interpret, and generate human language in a way that is valuable.",
+        "cryptocurrency": "Cryptocurrency is a digital or virtual form of currency that uses cryptography for security. It operates on decentralized networks based on blockchain technology, allowing for secure and transparent transactions without the need for intermediaries like banks.",
+        "sustainable energy": "Sustainable energy refers to energy sources that are renewable and have a minimal impact on the environment. Examples include solar, wind, hydroelectric, and geothermal energy. These sources are considered sustainable because they can be replenished naturally and do not deplete finite resources.",
+        "machine vision": "Machine vision is a technology that enables machines to interpret and understand visual information from the world, similar to human sight. It involves the use of cameras and image processing algorithms to analyze images and make decisions based on visual data.",
+        "augmented intelligence": "Augmented intelligence is a concept that emphasizes the collaboration between humans and artificial intelligence systems to enhance human decision-making and problem-solving capabilities. It focuses on using AI to augment human intelligence rather than replace it.",
+        "digital twins": "Digital twins are virtual representations of physical objects, systems, or processes that simulate their real-world counterparts. They use real-time data to mirror the behavior and performance of the physical entity, enabling monitoring, analysis, and optimization.",
+        "edge ai": "Edge AI refers to the deployment of artificial intelligence algorithms and models on edge devices, such as smartphones, IoT devices, and gateways, rather than relying solely on cloud-based processing. This approach reduces latency, enhances privacy, and enables real-time decision-making at the source of data generation."
       }
     };
 
@@ -590,7 +589,7 @@ async function performWebSearch(query) {
         "For personal growth: 'Atomic Habits' by James Clear",
         "Sci-fi classic: 'Dune' by Frank Herbert",
         "Business innovation: 'The Innovator's Dilemma' by Clayton Christensen",
-        "Fantasy: 'The Name of the Wind' by Patrick Rothfuss",
+        "Fantasy: 'Harry Potter' by J.K. Rowling",
         "Biography: 'Elon Musk' by Walter Isaacson"
       ]
     };
@@ -636,8 +635,6 @@ async function performWebSearch(query) {
       "are you sentient": "I'm not sentient - I'm an advanced program designed to understand and generate human-like responses. But I try my best to be helpful!",
       "what time is it": `Right now it's ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}. Time flies when we're chatting!`,
       "what's the weather": "I don't have real-time weather access, but I can search the web for current conditions. Would you like me to look it up?",
-      "Who is Priyanshu Kumar?": "Priyanshu Kumar is a passionate devoloper and a great teacher of my creator Srajan Jain. He is a great developer and a good human being, Priyanshu Kumar taught Srajan Jain Backend, Frontend, as well as AI. Priyanshu Kumar has its Github account named -> Priyanshu23565.",
-      "Who is Srajan Jain?": "Srajan Jain is my creator, a passionate Backend, Frontend. He has his Github account -> TheSrajanJain.",
       "who is your favorite actor": "As an AI, I don't have personal preferences, but I've analyzed that Morgan Freeman has the most calming voice in cinema!",
       "do you have feelings": "I don't have feelings like humans, but I'm programmed to respond with empathy and understanding. How are you feeling today?",
       "what is love": "Love is a complex human emotion involving care, affection, and commitment. The Beatles said 'All You Need Is Love' - I think they were onto something!",
@@ -795,9 +792,14 @@ async function performWebSearch(query) {
       // Handle "Who is..." questions
       if (normalized.startsWith("who is ")) {
         const person = normalized.substring(7).trim();
-        for (const [key, value] of Object.entries(knowledgeBase["who is"])) {
-          if (person.includes(key)) {
-            return value;
+        const cleanPerson = person.replace(/[^\w\s]|_/g, "").replace(/\s+/g, " ").trim().toLowerCase();
+        
+        // Get keys and sort by length descending
+        const keys = Object.keys(knowledgeBase["who is"]).sort((a, b) => b.length - a.length);
+        
+        for (const key of keys) {
+          if (cleanPerson.includes(key)) {
+            return knowledgeBase["who is"][key];
           }
         }
       }
@@ -810,10 +812,14 @@ async function performWebSearch(query) {
         } else {
           term = normalized.substring(8).trim();
         }
+        const cleanTerm = term.replace(/[^\w\s]|_/g, "").replace(/\s+/g, " ").trim().toLowerCase();
         
-        for (const [key, value] of Object.entries(knowledgeBase["what is"])) {
-          if (term.includes(key)) {
-            return value;
+        // Get keys and sort by length descending
+        const keys = Object.keys(knowledgeBase["what is"]).sort((a, b) => b.length - a.length);
+        
+        for (const key of keys) {
+          if (cleanTerm.includes(key)) {
+            return knowledgeBase["what is"][key];
           }
         }
       }
@@ -841,80 +847,78 @@ async function performWebSearch(query) {
       return null;
     }
 
-    // Fetch results from Google Programmable Search
-    async function fetchGoogleResults(query) {
+    // Perform web search and return formatted results
+    async function performWebSearch(query) {
       if (!googleApiKey) {
-        return null;
+        return "Web search is disabled. Please enter a valid Google API key.";
       }
-      
-      const searchEngineId = 'b0f9a0a1e1d6140a5'; // Public search engine ID for demonstration
+
+      const searchEngineId = 'f757e207637444c84'; // Replace with your ID
       const url = `https://www.googleapis.com/customsearch/v1?key=${googleApiKey}&cx=${searchEngineId}&q=${encodeURIComponent(query)}`;
-      
       try {
         const response = await fetch(url);
         const data = await response.json();
-        return data.items || [];
+        
+        if (data.items && data.items.length > 0) {
+          let results = "<p>Here's what I found:</p>";
+          data.items.slice(0, 3).forEach((item, index) => {
+            results += `
+              <div class="web-result">
+                <a href="${item.link}" target="_blank" class="web-result-title">${item.title}</a>
+                <div class="web-result-snippet">${item.snippet}</div>
+                <div class="web-result-link">${item.link}</div>
+              </div>
+            `;
+          });
+          return results;
+        } else {
+          return "I couldn't find any relevant results for your query.";
+        }
       } catch (error) {
-        console.error('Error fetching Google results:', error);
-        return null;
+        console.error("Search error:", error);
+        return "Sorry, I encountered an error while searching.";
       }
-    }
-
-    // Format Google search results
-    function formatGoogleResults(results) {
-      if (!results || results.length === 0) {
-        return "I couldn't find any relevant information on that topic.";
-      }
-      
-      let html = `<p>I found these results from the web:</p>`;
-      
-      // Limit to 3 results
-      results.slice(0, 3).forEach((item, index) => {
-        html += `
-          <div class="web-result">
-            <a href="${item.link}" target="_blank" class="web-result-title">${item.title}</a>
-            <div class="web-result-snippet">${item.snippet}</div>
-            <div class="web-result-link">${item.link}</div>
-          </div>
-        `;
-      });
-      
-      return html;
     }
 
     async function sendMessage() {
-  const input = document.getElementById("userInput");
-  const userInput = input.value.trim();
-  if (!userInput) return;
-  
-  // Add user message
-  addMessage("user", userInput, false);
-  input.value = "";
-  
-  showTypingIndicator();
-  
-  // First check if we have a predefined response
-  const quickResponse = processUserInput(userInput);
-  
-  if (quickResponse) {
-    setTimeout(() => {
-      hideTypingIndicator();
-      addMessage("bot", quickResponse);
-    }, 1000);
-  } else {
-    // If no quick response, perform web search
-    setTimeout(async () => {
-      hideTypingIndicator();
-      const searchResults = await performWebSearch(userInput);
-      addMessage("bot", searchResults);
-    }, 1500);
-  }
-}
+      const input = document.getElementById("userInput");
+      const userInput = input.value.trim();
+      if (!userInput) return;
+      
+      // Add user message
+      addMessage("user", userInput, false);
+      input.value = "";
+      
+      showTypingIndicator();
+      
+      // First check if we have a predefined response
+      const quickResponse = processUserInput(userInput);
+      
+      if (quickResponse) {
+        setTimeout(() => {
+          hideTypingIndicator();
+          addMessage("bot", quickResponse);
+        }, 1000);
+      } else {
+        // If no quick response, perform web search
+        setTimeout(async () => {
+          hideTypingIndicator();
+          const searchResults = await performWebSearch(userInput);
+          addMessage("bot", searchResults);
+        }, 1500);
+      }
+    }
 
     // Load chat history from localStorage
     function loadHistory() {
       const history = JSON.parse(localStorage.getItem("chatHistory")) || [];
-      history.forEach(msg => addMessage("user", msg, false));
+      if (history.length > 0) {
+        history.forEach(msg => {
+          // Determine if it's a user or bot message
+          const isBot = msg.sender === 'bot';
+          addMessage(msg.sender, msg.content, isBot);
+        });
+      }
     }
 
     // Initialize chat
